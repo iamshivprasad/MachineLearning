@@ -22,7 +22,8 @@ class TicTacToe():
     def is_winning(self, curr_state):
         """Takes state as an input and returns whether any row, column or diagonal has winning sum
         Example: Input state- [1, 2, 3, 4, nan, nan, nan, nan, nan]
-        Output = False"""
+        Output = False"""       
+        
         curr_state_m = np.array(curr_state)
         curr_state_m = curr_state_m.reshape((3,3))
         
@@ -80,13 +81,14 @@ class TicTacToe():
         Output = [1, 2, 3, 4, nan, nan, nan, 9, nan]
         """
 
-        agent_act, env_act = self.action_space(self, curr_state)
-        agent_act_lst = [a for a in agent_act]
+#         agent_act, env_act = self.action_space(curr_state)
+#         agent_act_lst = [a for a in agent_act]
 
-        if curr_action in agent_act_lst:
-            curr_state[curr_action[0]] = curr_action[1]
+#         if curr_action in agent_act_lst:
+        curr_state_copy = curr_state.copy()
+        curr_state_copy[curr_action[0]] = curr_action[1]
 
-        return curr_state
+        return curr_state_copy
 
 
     def step(self, curr_state, curr_action):
@@ -95,34 +97,35 @@ class TicTacToe():
         Example: Input state- [1, 2, 3, 4, nan, nan, nan, nan, nan], action- [7, 9] or [position, value]
         Output = ([1, 2, 3, 4, nan, nan, nan, 9, nan], -1, False)"""
 
-        curr_state = self.state_transition(self, curr_state, curr_action)
+        next_state_tmp = self.state_transition(curr_state, curr_action)
 
-        ret_agent, status_agent = is_terminal(curr_state)
+        ret_agent, status_agent = self.is_terminal(next_state_tmp)
 
         if ret_agent:
 
             if status_agent == "Win":
-                return (curr_state, 10, True)
+                return (next_state_tmp, 10, True)
 
             else: # tie
-                return (curr_state, 0, True)
+                return (next_state_tmp, 0, True)
 
-        agent_actions, env_actions = action_space(self, curr_state)
+        agent_actions, env_actions = self.action_space(next_state_tmp)
+        
         random_env_action = random.choice([e for e in env_actions])
 
-        curr_state[random_env_action[0]] = random_env_action[1]
-
-        ret_env, status_env = is_terminal(curr_state)
+        next_state_tmp = self.state_transition(next_state_tmp, random_env_action)
+        
+        ret_env, status_env = self.is_terminal(next_state_tmp)
 
         if ret_env:
 
             if status_env == "Win":
-                return (curr_state, -10, True)
+                return (next_state_tmp, -10, True)
 
             else:
-                return (curr_state, 0, True)
+                return (next_state_tmp, 0, True)
 
-        return (curr_state, -1, False)
+        return (next_state_tmp, -1, False)
 
     def reset(self):
         return self.state
