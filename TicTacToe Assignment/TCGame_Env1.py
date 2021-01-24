@@ -91,7 +91,7 @@ class TicTacToe():
         return curr_state_copy
 
 
-    def step(self, curr_state, curr_action):
+    def step(self, curr_state, curr_action, isTest = False):
         """Takes current state and action and returns the next state, reward and whether the state is terminal. Hint: First, check the board position after
         agent's move, whether the game is won/loss/tied. Then incorporate environment's move and again check the board status.
         Example: Input state- [1, 2, 3, 4, nan, nan, nan, nan, nan], action- [7, 9] or [position, value]
@@ -110,8 +110,12 @@ class TicTacToe():
                 return (next_state_tmp, 0, True)
 
         agent_actions, env_actions = self.action_space(next_state_tmp)
-        
-        random_env_action = random.choice([e for e in env_actions])
+
+        if isTest:
+            print("Enter one of the available actions:", list(env_actions))
+            random_env_action = tuple(int(x.strip()) for x in input().split(','))
+        else:
+            random_env_action = random.choice([e for e in env_actions])
 
         next_state_tmp = self.state_transition(next_state_tmp, random_env_action)
         
